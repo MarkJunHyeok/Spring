@@ -30,6 +30,6 @@
         </c:forEach>
         </tbody>
         </table>
-        <button type="button" onclick="location.href='/board/regiView'">글쓰기</button>
+        <button type="button" onclick="location.href='/noticeText'">글쓰기</button>
     </main>
 </div>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.login.MemberMapper">
+    <insert id="joinMember" parameterType="com.spring.login.MemberDAO">
+        insert into member_info (
+             mi_id
+            ,mi_pw
+            ,mi_name
+            ,mi_birthday
+            ,mi_email
+            ,mi_tell
+            ,mi_mobile
+            ,mi_addr
+
+        )values(
+           #{mi_id},
+           #{mi_pw},
+           #{mi_name},
+           #{mi_birthday},
+           #{mi_email},
+           #{mi_tell},
+           #{mi_mobile},
+           #{mi_addr}
+        )
+
+    </insert>
+
+    <select id="loginMember" parameterType="com.spring.login.MemberDTO" resultType="com.spring.login.MemberDTO">
+        select * from member_info mi where mi_id = #{mi_id} and mi_pw = #{mi_pw}
+    </select>
+
+    <select id="checkID" parameterType="String" resultType="int">
+        select count(*) from member_info mi  where mi_id = #{id}
+    </select>
+
+</mapper>

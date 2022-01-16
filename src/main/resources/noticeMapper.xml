@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.notice.NoticeMapper">
+    <insert id="noticeCreate" parameterType="com.spring.notice.NoticeDTO">
+        insert into notice_info(
+            ni_title,
+            ni_text,
+            mi_id
+        )values(
+           #{ni_title},
+           #{ni_text},
+           #{mi_id}
+        )
+    </insert>
+
+
+    <update id="viewsUpdate" parameterType="int">
+        update notice_info set ni_views = ni_views+1 where ni_num = #{num}
+    </update>
+
+    <select id="noticeView" parameterType="int" resultType="com.spring.notice.NoticeDTO">
+        select A.* , B.mi_name
+        from notice_info A inner join member_info B
+        on A.mi_id = B.mi_id
+        where ni_num = #{num};
+    </select>
+
+    <update id="noticeUpdate" parameterType="com.spring.notice.NoticeDTO">
+        update notice_info
+        set ni_title = #{ni_title}, ni_text = #{ni_text}, ni_updatedt = to_char(now(), 'YYYYMMDDHH24MISS'::text)
+        where ni_num = #{ni_num};
+    </update>
+
+    <delete id="noticeDelete" parameterType="int">
+        delete from notice_info where ni_num = #{num}
+    </delete>
+
+    <select id="noticePageCount" resultType="int">
+        select count(*) from notice_info;
+    </select>
+
+    <select id="noticeLoad" parameterType="com.spring.notice.PageDTO" resultType="com.spring.notice.NoticeDTO">
+        select A.ni_num, A.ni_title, A.ni_updatedt , A.ni_views, B.mi_name
+        from notice_info A inner join member_info B on A.mi_id = B.mi_id order by ni_num desc
+        LIMIT #{PAGE_SIZE} offset #{startIndex}
+
+
+    </select>
+
+</mapper>

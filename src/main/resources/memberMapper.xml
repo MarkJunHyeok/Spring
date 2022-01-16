@@ -25,12 +25,29 @@
 
     </insert>
 
-    <select id="loginMember" parameterType="com.spring.login.MemberDTO" resultType="com.spring.login.MemberDTO">
+    <select id="loadMember" parameterType="com.spring.login.MemberDTO" resultType="com.spring.login.MemberDTO">
         select * from member_info mi where mi_id = #{mi_id} and mi_pw = #{mi_pw}
     </select>
 
     <select id="checkID" parameterType="String" resultType="int">
         select count(*) from member_info mi  where mi_id = #{id}
     </select>
+
+    <update id="updateMember" parameterType="com.spring.login.MemberDTO" >
+        update member_info set
+           mi_pw = #{mi_pw},
+           mi_name = #{mi_name},
+           mi_birthday = #{mi_birthday},
+           mi_email = #{mi_email},
+           mi_tell = #{mi_tell},
+           mi_mobile = #{mi_mobile},
+           mi_addr = #{mi_addr}
+        where mi_id = #{mi_id}
+
+    </update>
+
+    <delete id="deleteMember" parameterType="String">
+        delete from member_info where mi_id = #{id}
+    </delete>
 
 </mapper>

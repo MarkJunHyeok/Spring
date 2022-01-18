@@ -13,7 +13,8 @@ public class NoticeService {
     @Resource(name = "NoticeDAO")
     NoticeDAO noticeDAO;
 
-    public void noticePageLoad(HttpServletRequest req){
+    //페이지 객체 받아오기
+    public PageDTO pageGET(HttpServletRequest req){
         // 전체리스트 개수
         int listCnt = noticeDAO.noticePageCount();
 
@@ -24,56 +25,40 @@ public class NoticeService {
         }
 
         PageDTO page = new PageDTO(listCnt, curPage);
-        List<NoticeDTO> notices = noticeDAO.noticeLoad(page);
-        req.setAttribute("notices", notices);
-        req.setAttribute("page" , page);
-        req.setAttribute("content", "notice/notice.jsp");
+
+        return page;
     }
 
-    public void noticeView(HttpServletRequest req){
+
+    public List<NoticeDTO> noticePageLoad(PageDTO page){
+        List<NoticeDTO> notices = noticeDAO.noticeLoad(page);
+        return notices;
+    }
+
+    public NoticeDTO noticeView(HttpServletRequest req){
         int num = Integer.parseInt(req.getParameter("ni_num"));
         noticeDAO.viewsUpdate(num);
         NoticeDTO noticeDTO = noticeDAO.noticeView(num);
-
-        if( noticeDTO == null){
-            System.out.println("실패");
-        }else{
-            req.getSession().setAttribute("noticeView", noticeDTO);
-            req.setAttribute("content", "notice/view.jsp");
-        }
+        return noticeDTO;
     }
 
-    public void noticeCreate(HttpServletRequest req , NoticeDTO noticeDTO){
+    public int noticeCreate(HttpServletRequest req , NoticeDTO noticeDTO){
         MemberDTO memberDTO = (MemberDTO) req.getSession().getAttribute("loginMember");
         noticeDTO.setMi_id(memberDTO.getMi_id());
         int result = noticeDAO.noticeCreate(noticeDTO);
-        if(result == 0){
-            req.setAttribute("MSG" , "게시글 작성에 실패하였습니다.");
-        }else{
-            req.setAttribute("MSG", "게시글 작성에 성공하셨습니다.");
-        }
+        return result;
     }
 
-    public void noticeUpdate(HttpServletRequest req , NoticeDTO noticeDTO){
+    public int noticeUpdate(HttpServletRequest req , NoticeDTO noticeDTO){
         NoticeDTO sessionDTO = (NoticeDTO) req.getSession().getAttribute("noticeView");
         noticeDTO.setNi_num(sessionDTO.getNi_num());
         int result = noticeDAO.noticeUpdate(noticeDTO);
-
-        if(result == 0){
-            req.setAttribute("MSG" , "게시글 수정이 실패되었습니다.");
-        }else{
-            req.setAttribute("MSG" , "게시글 수정이 완료되었습니다.");
-        }
+        return result;
     }
 
-    public void noticeDelete(HttpServletRequest req){
+    public int noticeDelete(HttpServletRequest req){
         int num = Integer.parseInt(req.getParameter("ni_num"));
         int result = noticeDAO.noticeDelete(num);
-
-        if( result == 0){
-            req.setAttribute("MSG" , "게시글 삭제가 실패되었습니다.");
-        }else{
-            req.setAttribute("MSG" , "게시글 삭제가 완료되었습니다.");
-        }
+        return result;
     }
 }

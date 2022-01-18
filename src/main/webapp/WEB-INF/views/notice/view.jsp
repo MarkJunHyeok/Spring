@@ -36,7 +36,7 @@
             </div>
 
             <c:choose>
-                <c:when test="${loginMember.mi_name eq noticeView.mi_name}">
+                <c:when test="${loginMember.mi_id eq noticeView.mi_id}">
                     <a class="w-100 btn btn-lg btn-primary" href="/noticeUpdatePage">게시글 수정</a>
                     <a class="w-100 btn btn-lg btn-primary" href="/noticeDelete?ni_num=${noticeView.ni_num}">게시글 삭제</a>
                 </c:when>

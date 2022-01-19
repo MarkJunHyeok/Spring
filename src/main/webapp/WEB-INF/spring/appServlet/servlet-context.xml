@@ -26,9 +26,9 @@
     <beans:bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
         <beans:property name="driverClassName" value="org.postgresql.Driver" />
         <beans:property name="url"
-                        value="jdbc:postgresql://211.198.161.8:5432/jun" />
-        <beans:property name="username" value="jun" />
-        <beans:property name="password" value="jun1234" />
+                        value="ㅇㄴㅁㅇㄹㄴ" />
+        <beans:property name="username" value="ㄹㅇㄴ" />
+        <beans:property name="password" value="ㄹㅁㅇㄴㄹ" />
     </beans:bean>
 
     <beans:bean id="transactionManager"

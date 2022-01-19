@@ -3,6 +3,7 @@ package com.spring.login;
 import lombok.Data;
 
 @Data
+
 public class MemberDTO {
 
     private String mi_id;

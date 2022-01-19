@@ -3,11 +3,14 @@ package com.spring.login;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-@Service
+@Repository(value = "MemberDAO")
 public class MemberDAO {
 
     @Autowired
@@ -16,9 +19,7 @@ public class MemberDAO {
     private static final String NAMESPACE = "com.spring.login.MemberMapper";
 
 
-    public int joinMember(HttpServletRequest req ,MemberDTO memberDTO){
-        String address = req.getParameter("address")+"!"+req.getParameter("postcode")+"!"+req.getParameter("address2");
-        memberDTO.setMi_addr(address);
+    public int joinMember(MemberDTO memberDTO){
         return sqlSession.getMapper(MemberMapper.class).joinMember(memberDTO);
 
     }
@@ -27,19 +28,15 @@ public class MemberDAO {
         return sqlSession.getMapper(MemberMapper.class).loadMember(memberDTO);
     }
 
-    public int checkID(HttpServletRequest req){
-        String id = req.getParameter("mi_id");
+    public int checkID(String id){
         return sqlSession.selectOne(NAMESPACE+".checkID", id);
     }
 
-    public int updateMember(HttpServletRequest req, MemberDTO memberDTO) {
-        String address = req.getParameter("address")+"!"+req.getParameter("postcode")+"!"+req.getParameter("address2");
-        memberDTO.setMi_addr(address);
+    public int updateMember(MemberDTO memberDTO) {
         return sqlSession.update(NAMESPACE+".updateMember", memberDTO);
     }
 
-    public int deleteMember(HttpServletRequest req) {
-        String id = req.getParameter("mi_id");
+    public int deleteMember(String id ) {
         return sqlSession.delete(NAMESPACE+".deleteMember", id);
     }
 }

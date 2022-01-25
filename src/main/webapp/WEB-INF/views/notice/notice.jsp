@@ -1,9 +1,20 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="utf-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <div class="container">
     <main class="form-signin">
         <h1 class="h3 mb-3 fw-normal">Notice</h1>
+        <form class="d-flex" style="text-align: right">
+            <select id="selectSearch" >
+                <option value="all">전체 검색</option>
+                <option value="title">제목 검색</option>
+                <option value="text">내용 검색</option>
+                <option value="writer">작성자 검색</option>
+            </select>
+            <input class="form-control me-2" type="search" name="inputSearch" id="inputSearch" placeholder="Search" aria-label="Search">
+            <a class="btn btn-outline-success" type="button" onclick="Search()" >Search</a>
+        </form>
+        <table class="table table-striped">
+
 
         <table class ="table table-striped">
             <thead>
@@ -16,17 +27,7 @@
                 </tr>
             </thead>
 
-            <tbody>
-                <c:forEach items="${notices}" var="list">
-                    <tr>
-                        <td>${list.ni_num}</td>
-                        <td><a href="/noticeView?ni_num=${list.ni_num}">${list.ni_title}</a></td>
-                        <td>${list.mi_name}</td>
-                        <fmt:parseDate value="${list.ni_updatedt}" var="dateValue" pattern="yyyyMMddHHmmss"/>
-                        <td><fmt:formatDate value="${dateValue}" pattern="yyyy-MM-dd"/></td>
-                        <td>${list.ni_views}</td>
-                    </tr>
-                </c:forEach>
+            <tbody id="noticeList">
             </tbody>
         </table>
         <c:choose>
@@ -40,43 +41,80 @@
     </main>
 
 
-    <div style="text-align: center">
-        <c:if test="${page.curRange ne 1 }">
-            <a href="/notice?num=1">[처음]</a>
-        </c:if>
-
-        <c:if test="${page.curPage ne 1}">
-            <a href="/notice?num=${page.prevPage }" >[이전]</a>
-        </c:if>
-
-        <c:forEach var="pageNum" begin="${page.startPage }" end="${page.endPage}">
-            <c:choose>
-                <c:when test="${pageNum eq  page.curPage}">
-                    <span style="font-weight: bold;"><a href="/notice?num=${pageNum}">${pageNum}</a></span>
-                </c:when>
-                <c:otherwise>
-                    <a href="/notice?num=${pageNum}">${pageNum }</a>
-                </c:otherwise>
-            </c:choose>
-        </c:forEach>
-
-        <c:if test="${page.curPage ne page.pageCnt}">
-            <a href="/notice?num=${page.nextPage }">[다음]</a>
-        </c:if>
-
-        <c:if test="${page.curRange ne page.rangeCnt}">
-            <a href="/notice?num=${page.pageCnt }">[끝]</a>
-        </c:if>
+    <div style="text-align: center" id="noticePage">
     </div>
 
-    <div>
-        총 게시글 수 : ${page.listCnt } /    총 페이지 수 : ${page.pageCnt } / 현재 페이지 : ${page.curPage } / 현재 블럭 : ${page.curRange } / 총 블럭 수 : ${page.rangeCnt }
-    </div>
 
 </div>
 
-<script type="text/javascript" src="lib.js"></script>
+
 <script>
+    $(document).ready(function (){
+        var data = {};
+        data.curPage = 1;
+        noticeLoad(data)
+    });
+
+
+    function Search(){
+        var data = {};
+        data.selectSearch = $("#selectSearch").val();
+        data.inputSearch = $("#inputSearch").val();
+        data.curPage = 1;
+        noticeLoad(data);
+    }
+
+    function goPage(page, select, input){
+        var data = {};
+        data.curPage = page;
+        data.selectSearch = select;
+        data.inputSearch = input;
+        noticeLoad(data)
+    }
+
+    function noticeLoad(data){
+        data.pageSize = 10;
+        data.rangeSize = 10;
+        $.ajax({
+            url: "/notice/load",
+            type : 'POST',
+            data : data,
+
+            error : function(error) {
+                alert("Error!");
+            },
+            success : function(value) {
+                $("#noticeList").children().remove();
+
+                var html ='';
+                for(var i = 0 ; i < value.list.length ; i++){
+                    var list = value.list[i];
+                    html += '<tr>';
+                    html +=  '<td>' + list.ni_num + '</td>';
+                    html +=  '<td><a href="/noticeView?ni_num=' + list.ni_num + '">' + list.ni_title + '</a></td>';
+                    html +=  '<td>' + list.mi_name + '</td>';
+                    html +=  '<td>' + list.ni_updatedt + '</td>';
+                    html +=  '<td>' + list.ni_views + '</td></tr>';
+                }
+                $("#noticeList").append(html);
+                $("#noticePage").paging({
+                    inputSearch : data.inputSearch,
+                    selectSearch : data.selectSearch,
+
+                    curPage : data.curPage,
+                    curRange : value.param.curRange,
+                    prevPage : value.param.prevPage,
+                    nextPage : value.param.nextPage,
+                    startPage : value.param.startPage,
+                    endPage : value.param.endPage,
+                    rangeCnt : value.param.rangeCnt,
+                    pageCnt : value.param.pageCnt
+
+                })
+            }
+
+        });
+    }
 
 
     function noticeView(data){

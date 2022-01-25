@@ -1,12 +1,13 @@
 package com.spring.notice;
 
-import com.spring.login.MemberDTO;
+
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 
 import java.util.List;
+import java.util.Map;
 
 @Repository(value = "NoticeDAO")
 public class NoticeDAO {
@@ -37,11 +38,17 @@ public class NoticeDAO {
         return sqlSession.delete(NAMESPACE+".noticeDelete", num);
     }
 
-    public int noticePageCount() {
-        return sqlSession.selectOne(NAMESPACE+".noticePageCount");
+    public int noticePageCount(String inputSearch, String selectSearch) {
+        return sqlSession.getMapper(NoticeMapper.class).noticePageCount(inputSearch, selectSearch);
     }
 
-    public List<NoticeDTO> noticeLoad(PageDTO page) {
-        return sqlSession.selectList(NAMESPACE+".noticeLoad" , page);
+    public List<NoticeDTO> noticeLoad(Map<String, Object> param) {
+        try{
+            return sqlSession.selectList(NAMESPACE+".noticeLoad", param);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
+
 }

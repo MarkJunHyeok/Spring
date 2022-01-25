@@ -1,6 +1,11 @@
 package com.spring.notice;
 
+
+
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
+import java.util.Map;
 
 public interface NoticeMapper {
 
@@ -15,9 +20,9 @@ public interface NoticeMapper {
 
 
 
-    int noticePageCount();
+    int noticePageCount(@Param("INPUT")String input , @Param("SELECT")String select);
 
     NoticeDTO noticeView(int num);
 
-    List<NoticeDTO> noticeLoad(PageDTO page);
+    List<NoticeDTO> noticeLoad(Map<String, Object> param);
 }

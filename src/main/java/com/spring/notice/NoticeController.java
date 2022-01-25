@@ -1,12 +1,15 @@
 package com.spring.notice;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class NoticeController {
@@ -19,7 +22,7 @@ public class NoticeController {
     //게시판 이동
     @RequestMapping (value ="/notice")
     public String noticeGo(HttpServletRequest req){
-        noticeLoad(req);
+        req.setAttribute("content", "notice/notice.jsp");
         return "home";
     }
 
@@ -53,7 +56,7 @@ public class NoticeController {
         }else{
             req.setAttribute("MSG", "게시글 작성에 성공하셨습니다.");
         }
-        noticeLoad(req);
+        req.setAttribute("content", "notice/notice.jsp");
         return "home";
     }
 
@@ -73,7 +76,7 @@ public class NoticeController {
         }else{
             req.setAttribute("MSG" , "게시글 수정이 완료되었습니다.");
         }
-        noticeLoad(req);
+        req.setAttribute("content", "notice/notice.jsp");
         return "home";
     }
 
@@ -86,18 +89,16 @@ public class NoticeController {
         }else{
             req.setAttribute("MSG" , "게시글 삭제가 완료되었습니다.");
         }
-        noticeLoad(req);
+        req.setAttribute("content", "notice/notice.jsp");
         return "home";
     }
 
 
     //페이지 로드
-    private void noticeLoad(HttpServletRequest req){
-        PageDTO page = noticeService.pageGET(req);
-        List<NoticeDTO> notices = noticeService.noticePageLoad(page);
-        req.setAttribute("notices", notices);
-        req.setAttribute("page" , page);
-        req.setAttribute("content", "notice/notice.jsp");
+    @RequestMapping(value = "/notice/load" , method = RequestMethod.POST)
+    @ResponseBody
+    private Map<String, Object> noticeLoad(HttpServletRequest req){
+        return  noticeService.noticePageLoad(req);
     }
 
 

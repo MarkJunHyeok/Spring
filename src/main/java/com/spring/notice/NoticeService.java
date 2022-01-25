@@ -1,11 +1,16 @@
 package com.spring.notice;
 
+
+import com.spring.PageComponent;
 import com.spring.login.MemberDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class NoticeService {
@@ -13,26 +18,32 @@ public class NoticeService {
     @Resource(name = "NoticeDAO")
     NoticeDAO noticeDAO;
 
-    //페이지 객체 받아오기
-    public PageDTO pageGET(HttpServletRequest req){
-        // 전체리스트 개수
-        int listCnt = noticeDAO.noticePageCount();
+    @Autowired
+    PageComponent pageComponent;
 
-        //현재 페이지
-        int curPage = 1; //기본값
-        if ( req.getParameter("num") != null){
-            curPage = Integer.parseInt(req.getParameter("num"));
+
+    public Map<String, Object> noticePageLoad(HttpServletRequest req){
+        try {
+            Map<String, Object> result = new HashMap<String, Object>();
+            String inputSearch = req.getParameter("inputSearch");
+            String selectSearch = req.getParameter("selectSearch");
+            int listCnt = noticeDAO.noticePageCount(inputSearch, selectSearch);
+            int pagesize = Integer.parseInt(req.getParameter("pageSize"));
+            int rangesize = Integer.parseInt(req.getParameter("rangeSize"));
+            int curPage = Integer.parseInt(req.getParameter("curPage"));
+
+
+
+            Map<String, Object> param = pageComponent.setPage(listCnt, curPage, pagesize, rangesize
+                            ,inputSearch, selectSearch);
+            List<NoticeDTO> list = noticeDAO.noticeLoad(param);
+            result.put("param", param);
+            result.put("list", list);
+            return result;
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
         }
-
-        PageDTO page = new PageDTO(listCnt, curPage);
-
-        return page;
-    }
-
-
-    public List<NoticeDTO> noticePageLoad(PageDTO page){
-        List<NoticeDTO> notices = noticeDAO.noticeLoad(page);
-        return notices;
     }
 
     public NoticeDTO noticeView(HttpServletRequest req){
